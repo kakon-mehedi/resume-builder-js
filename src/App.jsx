@@ -1,5 +1,7 @@
+import CVBuilder from '../file';
+
 function App() {
-	return <>Hello world</>;
+	return <CVBuilder />;
 }
 
 export default App;
