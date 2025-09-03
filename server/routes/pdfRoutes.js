@@ -5,62 +5,64 @@ const path = require('path');
 
 // Generate PDF from CV data
 router.post('/generate', async (req, res) => {
-  try {
-    const { cvData, template = 'modern' } = req.body;
-    
-    // Generate HTML content
-    const htmlContent = generateHTMLFromCV(cvData, template);
-    
-    // Launch puppeteer
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
-    
-    const page = await browser.newPage();
-    
-    // Set content and wait for it to load
-    await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
-    
-    // Generate PDF
-    const pdf = await page.pdf({
-      format: 'A4',
-      margin: {
-        top: '0.5in',
-        right: '0.5in',
-        bottom: '0.5in',
-        left: '0.5in'
-      },
-      printBackground: true
-    });
-    
-    await browser.close();
-    
-    // Set headers for PDF download
-    res.set({
-      'Content-Type': 'application/pdf',
-      'Content-Disposition': `attachment; filename="${cvData.personalInfo.name || 'CV'}.pdf"`,
-      'Content-Length': pdf.length
-    });
-    
-    res.send(pdf);
-  } catch (error) {
-    console.error('PDF generation error:', error);
-    res.status(500).json({ message: 'Failed to generate PDF' });
-  }
+	try {
+		const { cvData, template = 'modern' } = req.body;
+
+		// Generate HTML content
+		const htmlContent = generateHTMLFromCV(cvData, template);
+
+		// Launch puppeteer
+		const browser = await puppeteer.launch({
+			headless: true,
+			args: ['--no-sandbox', '--disable-setuid-sandbox'],
+		});
+
+		const page = await browser.newPage();
+
+		// Set content and wait for it to load
+		await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+
+		// Generate PDF
+		const pdf = await page.pdf({
+			format: 'A4',
+			margin: {
+				top: '0.5in',
+				right: '0.5in',
+				bottom: '0.5in',
+				left: '0.5in',
+			},
+			printBackground: true,
+		});
+
+		await browser.close();
+
+		// Set headers for PDF download
+		res.set({
+			'Content-Type': 'application/pdf',
+			'Content-Disposition': `attachment; filename="${
+				cvData.personalInfo.name || 'CV'
+			}.pdf"`,
+			'Content-Length': pdf?.length,
+		});
+
+		res.send(pdf);
+	} catch (error) {
+		console.error('PDF generation error:', error);
+		res.status(500).json({ message: 'Failed to generate PDF' });
+	}
 });
 
 // Function to generate HTML from CV data
 function generateHTMLFromCV(cvData, template) {
-  const skillCategories = [
-    { key: 'frontend', label: 'Frontend' },
-    { key: 'backend', label: 'Backend' },
-    { key: 'database', label: 'Database' },
-    { key: 'tools', label: 'Tools & DevOps' },
-    { key: 'other', label: 'Other' }
-  ];
-  
-  return `
+	const skillCategories = [
+		{ key: 'frontend', label: 'Frontend' },
+		{ key: 'backend', label: 'Backend' },
+		{ key: 'database', label: 'Database' },
+		{ key: 'tools', label: 'Tools & DevOps' },
+		{ key: 'other', label: 'Other' },
+	];
+
+	return `
     <!DOCTYPE html>
     <html>
     <head>
@@ -165,89 +167,176 @@ function generateHTMLFromCV(cvData, template) {
     <body>
       <div class="header">
         <div class="name">${cvData.personalInfo.name || '[Your Name]'}</div>
-        <div class="contact">${[cvData.personalInfo.phone, cvData.personalInfo.email, cvData.personalInfo.location, cvData.personalInfo.linkedin, cvData.personalInfo.github].filter(Boolean).join(' | ')}</div>
+        <div class="contact">${[
+			cvData.personalInfo.phone,
+			cvData.personalInfo.email,
+			cvData.personalInfo.location,
+			cvData.personalInfo.linkedin,
+			cvData.personalInfo.github,
+		]
+			.filter(Boolean)
+			.join(' | ')}</div>
       </div>
       
-      ${cvData.summary ? `
+      ${
+			cvData.summary
+				? `
         <div class="section">
           <div class="section-title">Summary</div>
           <p>${cvData.summary}</p>
         </div>
-      ` : ''}
+      `
+				: ''
+		}
       
-      ${Object.values(cvData.skills).some(skills => skills.length > 0) ? `
+      ${
+			Object.values(cvData.skills).some((skills) => skills?.length > 0)
+				? `
         <div class="section">
           <div class="section-title">Technical Skills</div>
           <div class="skills-grid">
-            ${skillCategories.map(category => 
-              cvData.skills[category.key].length > 0 ? `
+            ${skillCategories
+				?.map((category) =>
+					cvData.skills[category.key]?.length > 0
+						? `
                 <div class="skills-category">
-                  <span class="skills-label">${category.label}:</span> ${cvData.skills[category.key].join(', ')}
+                  <span class="skills-label">${
+						category.label
+					}:</span> ${cvData.skills[category.key].join(', ')}
                 </div>
-              ` : ''
-            ).join('')}
+              `
+						: ''
+				)
+				.join('')}
           </div>
         </div>
-      ` : ''}
+      `
+				: ''
+		}
       
-      ${cvData.experience.length > 0 ? `
+      ${
+			cvData.experience?.length > 0
+				? `
         <div class="section">
           <div class="section-title">Professional Experience</div>
-          ${cvData.experience.map(exp => `
+          ${cvData.experience
+				?.map(
+					(exp) => `
             <div style="margin-bottom: 10px;">
               <div class="job-header">
                 <div>
                   <span class="job-title">${exp.title}</span>
-                  ${exp.company ? ` | <span class="job-title">${exp.company}</span>` : ''}
+                  ${
+						exp.company
+							? ` | <span class="job-title">${exp.company}</span>`
+							: ''
+					}
                 </div>
-                ${exp.duration ? `<span class="duration">${exp.duration}</span>` : ''}
+                ${
+					exp.duration
+						? `<span class="duration">${exp.duration}</span>`
+						: ''
+				}
               </div>
-              ${exp.bullets.filter(bullet => bullet.trim()).length > 0 ? `
+              ${
+					exp.bullets.filter((bullet) => bullet.trim())?.length > 0
+						? `
                 <ul class="bullets">
-                  ${exp.bullets.filter(bullet => bullet.trim()).map(bullet => `<li>${bullet}</li>`).join('')}
+                  ${exp.bullets
+						.filter((bullet) => bullet.trim())
+						?.map((bullet) => `<li>${bullet}</li>`)
+						.join('')}
                 </ul>
-              ` : ''}
+              `
+						: ''
+				}
             </div>
-          `).join('')}
+          `
+				)
+				.join('')}
         </div>
-      ` : ''}
+      `
+				: ''
+		}
       
-      ${cvData.projects.length > 0 ? `
+      ${
+			cvData.projects?.length > 0
+				? `
         <div class="section">
           <div class="section-title">Key Projects</div>
-          ${cvData.projects.map(project => `
+          ${cvData.projects
+				?.map(
+					(project) => `
             <div style="margin-bottom: 10px;">
               <div class="project-header">${project.name}</div>
-              ${project.techStack ? `<div class="tech-stack">${project.techStack}</div>` : ''}
-              ${project.bullets.filter(bullet => bullet.trim()).length > 0 ? `
+              ${
+					project.techStack
+						? `<div class="tech-stack">${project.techStack}</div>`
+						: ''
+				}
+              ${
+					project.bullets.filter((bullet) => bullet.trim())?.length >
+					0
+						? `
                 <ul class="bullets">
-                  ${project.bullets.filter(bullet => bullet.trim()).map(bullet => `<li>${bullet}</li>`).join('')}
+                  ${project.bullets
+						.filter((bullet) => bullet.trim())
+						?.map((bullet) => `<li>${bullet}</li>`)
+						.join('')}
                 </ul>
-              ` : ''}
+              `
+						: ''
+				}
             </div>
-          `).join('')}
+          `
+				)
+				.join('')}
         </div>
-      ` : ''}
+      `
+				: ''
+		}
       
-      ${(cvData.education.degree || cvData.awards.length > 0) ? `
+      ${
+			cvData.education.degree || cvData.awards?.length > 0
+				? `
         <div class="section">
           <div class="section-title">Education & Awards</div>
-          ${cvData.education.degree ? `
+          ${
+				cvData.education.degree
+					? `
             <div class="job-header" style="margin-bottom: 8px;">
               <div>
                 <span class="job-title">${cvData.education.degree}</span>
-                ${cvData.education.university ? ` | ${cvData.education.university}` : ''}
+                ${
+					cvData.education.university
+						? ` | ${cvData.education.university}`
+						: ''
+				}
               </div>
-              ${cvData.education.duration ? `<span class="duration">${cvData.education.duration}</span>` : ''}
+              ${
+					cvData.education.duration
+						? `<span class="duration">${cvData.education.duration}</span>`
+						: ''
+				}
             </div>
-          ` : ''}
-          ${cvData.awards.filter(award => award.trim()).length > 0 ? `
+          `
+					: ''
+			}
+          ${
+				cvData.awards.filter((award) => award.trim())?.length > 0
+					? `
             <p style="margin-top: 4px;">
-              <span class="skills-label">Awards:</span> ${cvData.awards.filter(award => award.trim()).join(' | ')}
+              <span class="skills-label">Awards:</span> ${cvData.awards
+					.filter((award) => award.trim())
+					.join(' | ')}
             </p>
-          ` : ''}
+          `
+					: ''
+			}
         </div>
-      ` : ''}
+      `
+				: ''
+		}
     </body>
     </html>
   `;
