@@ -1,115 +1,12 @@
-# CV Builder Application Backend
+# React + Vite
 
-A full-stack dynamic CV builder with React frontend and Express backend.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Features
+Currently, two official plugins are available:
 
--   Dynamic CV creation with multiple templates
--   Save and manage multiple CVs
--   Export to PDF
--   Real-time preview
--   Modular architecture
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-## Installation
+## Expanding the ESLint configuration
 
-1. Clone the repository
-2. Install dependencies: `npm run install-all`
-3. Start development: `npm run dev`
-
-## Tech Stack
-
--   Frontend: React, Tailwind CSS
--   Backend: Express.js, MongoDB
--   PDF Generation: Puppeteer
-
-## Folder Structure
-
-```
-cv-builder-app/
-├── client/          # React frontend
-├── server/          # Express backend
-├── package.json     # Root package.json
-└── README.md
-
-```
-
-# CV Builder Application Frontend
-
-cv-builder-app/
-├── package.json # Root package.json
-├── .env # Environment variables
-├── .env.example # Environment template
-├── .gitignore # Git ignore rules
-├── README.md # Project documentation
-├── install.sh # Installation script
-├── Dockerfile # Docker configuration
-├── docker-compose.yml # Docker Compose setup
-├── server/ # Backend Express app
-│ ├── index.js # Server entry point
-│ ├── config/
-│ │ └── database.js # Database connection
-│ ├── models/
-│ │ ├── CV.js # CV model
-│ │ └── User.js # User model
-│ ├── routes/
-│ │ ├── cvRoutes.js # CV CRUD routes
-│ │ ├── pdfRoutes.js # PDF generation
-│ │ └── authRoutes.js # Authentication
-│ └── uploads/ # File uploads (created)
-├── client/ # Frontend React app
-│ ├── package.json # Client package.json
-│ ├── tailwind.config.js # Tailwind configuration
-│ ├── public/
-│ │ ├── index.html # Main HTML template
-│ │ └── favicon.ico # Site icon
-│ └── src/
-│ ├── index.js # React entry point
-│ ├── index.css # Global styles
-│ ├── App.js # Main App component
-│ ├── components/
-│ │ ├── common/
-│ │ │ ├── Button.js # Reusable button
-│ │ │ ├── LoadingSpinner.js
-│ │ │ └── BulletPointsManager.js
-│ │ ├── forms/
-│ │ │ ├── PersonalInfoTab.js
-│ │ │ ├── SkillsTab.js
-│ │ │ ├── ExperienceTab.js
-│ │ │ ├── ProjectsTab.js
-│ │ │ └── EducationTab.js
-│ │ └── preview/
-│ │ └── CVPreview.js
-│ ├── pages/
-│ │ ├── CVBuilder.js # Main builder page
-│ │ └── Dashboard.js # CV management
-│ ├── hooks/
-│ │ └── useCVData.js # CV data management
-│ ├── services/
-│ │ └── api.js # API service layer
-│ ├── contexts/
-│ │ └── AuthContext.js # Authentication context
-│ └── utils/ # Utility functions
-└── .vscode/
-└── settings.json # VS Code settings
-
-````
-
-## 🚀 Quick Start Commands
-
-```bash
-# Clone and setup
-git clone <repository>
-cd cv-builder-app
-
-# Install all dependencies
-npm run install-all
-
-# Start development (runs both client and server)
-npm run dev
-
-# Build for production
-npm run build
-
-# Start production server
-npm start
-````
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
